@@ -1,0 +1,19 @@
+# Arquivos CSV
+*.csv
+
+# Ambiente virtual Python
+.venv/
+venv/
+env/
+
+# Arquivos de cache Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# Arquivos do sistema
+.DS_Store
+Thumbs.db
