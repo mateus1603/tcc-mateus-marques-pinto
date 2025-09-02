@@ -13,7 +13,3 @@ __pycache__/
 
 # Jupyter Notebook checkpoints
 .ipynb_checkpoints/
-
-# Arquivos do sistema
-.DS_Store
-Thumbs.db
