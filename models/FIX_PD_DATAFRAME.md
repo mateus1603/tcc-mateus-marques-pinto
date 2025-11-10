@@ -17,43 +17,57 @@ The error occurred because:
 2. The Darts TimeSeries API does not have a `pd_dataframe()` method
 3. The correct approach is to use the `.values()` method which returns a numpy array directly
 
+# Fix: pd_dataframe() Error in TCN_new.ipynb
+
+## Problem Description
+
+In topic 5 (section on data normalization) of `models/TCN_new.ipynb`, line 352 contained an implementation error attempting to use `pd_dataframe()` method which doesn't exist on TimeSeries objects.
+
+## Root Cause
+
+The TimeSeries class in Darts doesn't have a `pd_dataframe()` method. Based on the Scaler class documentation example, the correct method to access values is `values()`.
+
 ## Solution Implemented
 
-**Before:**
+**Final Solution:**
 ```python
-# Original code with incorrect method call
-train_df = train_scaled.pd_dataframe()
-train_values = train_df.values.flatten()
-```
-
-**After:**
-```python
-# Corrected: pd_dataframe() is a method, not a property
-train_values = train_scaled.pd_dataframe().values.flatten()
+# TimeSeries.values() retorna um numpy array conforme documentação do Scaler
+train_values = train_scaled.values()
+if train_values.ndim > 1:
+    train_values = train_values.flatten()
 ```
 
 ## Changes Made
 
-1. **Corrected** the `pd_dataframe()` method call - it IS a valid method in Darts TimeSeries API
-2. **Simplified** by chaining the method calls directly
-3. **Updated** all three occurrences to use consistent approach
-4. **Verified** that Scaler usage is correct per Darts documentation
+1. **Removed** the incorrect `pd_dataframe()` call (method doesn't exist in Darts TimeSeries)
+2. **Used** `values()` method as shown in Scaler documentation examples
+3. **Added** conditional flattening to handle both 1D and 2D arrays safely
+4. **Updated** comment to reference the Scaler documentation
 
-**Root Cause Analysis**:
-The original code attempted to call `pd_dataframe()` as a method, which is actually correct. The confusion arose from:
-- Initial attempts to use `values()` and `all_values()` returned `nan`
-- The correct approach is `pd_dataframe().values.flatten()` which:
-  1. Converts the TimeSeries to a pandas DataFrame using `pd_dataframe()`
-  2. Accesses the numpy array from the DataFrame with `.values`
-  3. Flattens the array to 1D with `.flatten()`
+**Key Insight from Scaler Documentation:**
+The Scaler class example shows:
+```python
+>>> series_transformed = transformer.fit_transform(series)
+>>> print(series_transformed.values())
+[[-1.]
+ [ 0.]
+ [ 1.]]
+```
+
+This confirms `values()` is the correct method to access the numpy array from a TimeSeries object.
 
 ## Verification
 
-The fix uses the correct pattern for accessing values from Darts TimeSeries:
+The fix uses the correct Darts TimeSeries API:
 
-- **Line 352**: `train_values = train_scaled.pd_dataframe().values.flatten()`
-- **Line 620**: `forecast_values = future_forecast_original.pd_dataframe().values.flatten()`
-- **Line 661**: `residuals = (test_original - test_predictions_original).pd_dataframe().values.flatten()`
+- **Line 352-354**: 
+  ```python
+  train_values = train_scaled.values()
+  if train_values.ndim > 1:
+      train_values = train_values.flatten()
+  ```
+- **Line 620-623**: Similar pattern for forecast values
+- **Line 662-665**: Similar pattern for residuals
 
 ## Scaler Usage
 
@@ -65,7 +79,24 @@ val_scaled = scaler.transform(val)          # Transform validation
 test_scaled = scaler.transform(test)        # Transform test
 ```
 
-This ensures no data leakage by fitting the scaler only on training data.
+The `fit_transform()` and `transform()` methods return TimeSeries objects, not lists, when given a single TimeSeries as input.
+
+## Impact
+
+This fix:
+- ✅ Uses the correct TimeSeries API method `values()`
+- ✅ Handles both 1D and multidimensional arrays with conditional flattening
+- ✅ Follows the pattern shown in official Darts Scaler documentation
+- ✅ Preserves the exact same functionality
+
+## Date
+
+2025-11-10
+
+## References
+
+- Darts Scaler Documentation (provided in issue comments)
+- Darts TimeSeries API: https://unit8co.github.io/darts/generated_api/darts.timeseries.html
 
 ## Impact
 
