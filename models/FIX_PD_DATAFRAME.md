@@ -28,23 +28,25 @@ train_values = train_df.values.flatten()
 
 **After:**
 ```python
-# TimeSeries.values() retorna um numpy array 2D
-train_values = train_scaled.values().flatten()
+# TimeSeries.values é uma propriedade que retorna um numpy array 2D
+train_values = train_scaled.values.flatten()
 ```
 
 ## Changes Made
 
 1. **Removed** the incorrect `pd_dataframe()` call
-2. **Simplified** the code by directly using `.values()` method
-3. **Updated** the comment to accurately reflect the implementation
-4. **Eliminated** the unnecessary intermediate `train_df` variable
+2. **Corrected** the API usage: `values` is a property, not a method (no parentheses)
+3. **Simplified** the code by directly using the `.values` property
+4. **Updated** the comment to accurately reflect the implementation
+5. **Eliminated** the unnecessary intermediate `train_df` variable
 
 ## Verification
 
-The fix is consistent with how TimeSeries values are accessed elsewhere in the same notebook:
+The fix uses the correct Darts TimeSeries API where `values` is accessed as a property:
 
-- **Line 621**: `forecast_values = future_forecast_original.values().flatten()`
-- **Line 662**: `residuals = (test_original - test_predictions_original).values().flatten()`
+- **Line 352**: `train_values = train_scaled.values.flatten()`
+- **Line 620**: `forecast_values = future_forecast_original.values.flatten()`
+- **Line 661**: `residuals = (test_original - test_predictions_original).values.flatten()`
 
 ## Impact
 
