@@ -28,26 +28,30 @@ train_values = train_df.values.flatten()
 
 **After:**
 ```python
-# TimeSeries.values() retorna um numpy array 2D
-train_values = train_scaled.values().flatten()
+# Acessar os valores diretamente do array numpy retornado por all_values()
+train_values = train_scaled.all_values(copy=False).flatten()
 ```
 
 ## Changes Made
 
 1. **Removed** the incorrect `pd_dataframe()` call (method doesn't exist in Darts TimeSeries API)
-2. **Simplified** the code by directly using `.values()` method
-3. **Updated** the comment to accurately reflect the implementation
-4. **Eliminated** the unnecessary intermediate `train_df` variable
+2. **Replaced** with `all_values(copy=False)` method which returns the underlying numpy array
+3. **Simplified** the code to directly access and flatten the array
+4. **Updated** the comment to accurately reflect the implementation
+5. **Eliminated** the unnecessary intermediate `train_df` variable
 
-**Note on Linter Warnings**: Some linters may report false positives about `values()` being a property. However, runtime testing confirms that `values()` is a method in the Darts TimeSeries API and must be called with parentheses.
+**Note on Method Selection**: 
+- `values()` was returning `nan` values in this context
+- `all_values(copy=False)` directly accesses the underlying numpy array and works correctly
+- The `copy=False` parameter avoids unnecessary array copying for better performance
 
 ## Verification
 
-The fix uses the correct Darts TimeSeries API where `values()` is called as a method:
+The fix uses the correct Darts TimeSeries API where `all_values()` is called to get the numpy array:
 
-- **Line 352**: `train_values = train_scaled.values().flatten()`
-- **Line 620**: `forecast_values = future_forecast_original.values().flatten()`
-- **Line 661**: `residuals = (test_original - test_predictions_original).values().flatten()`
+- **Line 352**: `train_values = train_scaled.all_values(copy=False).flatten()`
+- **Line 620**: `forecast_values = future_forecast_original.all_values(copy=False).flatten()`
+- **Line 661**: `residuals = (test_original - test_predictions_original).all_values(copy=False).flatten()`
 
 ## Impact
 
