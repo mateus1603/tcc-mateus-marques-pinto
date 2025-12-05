@@ -1,5 +1,5 @@
 # Arquivos CSV
-*.csv
+
 
 # Ambiente virtual Python
 .venv/
@@ -13,3 +13,6 @@ __pycache__/
 
 # Jupyter Notebook checkpoints
 .ipynb_checkpoints/
+
+# Arquivos Darts
+models/darts_logs/
